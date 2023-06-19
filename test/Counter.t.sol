@@ -1,24 +1,44 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.18;
 
-import "forge-std/Test.sol";
-import "../src/Counter.sol";
+import {Test} from "forge-std/Test.sol";
+import {Counter} from "../src/Counter.sol";
 
-contract CounterTest is Test {
+contract TestCounter is Test {
     Counter public counter;
 
     function setUp() public {
         counter = new Counter();
-        counter.setNumber(0);
+    }
+
+    function testCountDefault() public {
+        assertEq(counter.getCount(), 0, "count should default to zero");
+    }
+
+    function testSetCount() public {
+        counter.setCount(100);
+        assertEq(counter.getCount(), 100, "count should be 100");
     }
 
     function testIncrement() public {
         counter.increment();
-        assertEq(counter.number(), 1);
+        assertEq(counter.getCount(), 1, "count should have increased by one");
     }
 
-    function testSetNumber(uint256 x) public {
-        counter.setNumber(x);
-        assertEq(counter.number(), x);
+    function testIncrementMax() public {
+        counter.setCount(type(uint256).max);
+        vm.expectRevert("count has reached maximum amount");
+        counter.increment();
+    }
+
+    function testDecrement() public {
+        counter.increment();
+        counter.decrement();
+        assertEq(counter.getCount(), 0, "count should have decreased by one");
+    }
+
+    function testDecrementMin() public {
+        vm.expectRevert("count can not be less than zero");
+        counter.decrement();
     }
 }
