@@ -16,8 +16,21 @@ contract Wallet {
         payable(msg.sender).transfer(amount);
     }
 
+    /// @notice set the owner of the contract
+    /// @param _owner the address of the new owner
     function setOwner(address _owner) public {
         require(msg.sender == owner, "only owner can set owner");
         owner = payable(_owner);
+    }
+
+    /// @notice get the balance of the contract
+    /// @return the balance of the contract
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+
+    // Create a function that requires a minimum deposit of 0.1 ether to be deposited into the contract
+    function deposit() public payable {
+        require(msg.value >= 0.1 ether, "minimum deposit is 0.1 ether");
     }
 }
